@@ -16,10 +16,21 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.set('view engine', 'ejs');
 
-// For file uploads
-const filename = fileURLToPath(import.meta.url);
-const dirname = path.dirname(filename);
-const upload = multer({ dest: path.join(dirname, 'uploads/') });
+// For file uploads (Multer v2)
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, path.join(__dirname, 'uploads/')); // Local uploads folder
+  },
+  filename: (req, file, cb) => {
+    const sanitized = sanitizeTitle(file.originalname);
+    cb(null, `${Date.now()}-${sanitized}${path.extname(file.originalname)}`);
+  }
+});
+
+const upload = multer({ storage });
 
 // ---------------- Routes ----------------
 
@@ -39,7 +50,7 @@ app.get('/16192224/edit/:id', isAuthenticated, async (req, res, next) => {
 app.post('/16192224/edit/:id', isAuthenticated, upload.single('image'), async (req, res, next) => {
     const postId = req.params.id;
     const { title, content, video } = req.body;
-    const imagePath = req.file ? /uploads/${sanitizeTitle(title)}${path.extname(req.file.originalname)} : null;
+    const imagePath = req.file ? `/uploads/${sanitizeTitle(title)}${path.extname(req.file.originalname)}` : null;
     const postSlug = sanitizeTitle(title);
 
     try {

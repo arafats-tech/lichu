@@ -1,20 +1,116 @@
 import mysql from 'mysql2/promise';
 import dotenv from 'dotenv';
 import bcrypt from 'bcrypt';
-import { S3Client } from '@aws-sdk/client-s3'; // Optional for cloud storage
 
 dotenv.config();
 
-// Database connection pool
+// FreeDB.tech Database Configuration
 export const db = mysql.createPool({
-  host: process.env.DB_HOST,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME,
+  host: process.env.DB_HOST || 'sql.freedb.tech',
+  user: process.env.DB_USER || 'freedb_lichu-arafatstech',
+  password: process.env.DB_PASSWORD || '*C?%f2V48fDwERT',
+  database: process.env.DB_NAME || 'freedb_lichu-arafatstech',
+  port: process.env.DB_PORT || 3306,
+  
+  // IMPORTANT: FreeDB.tech requires SSL disabled
+  ssl: false,
+  
+  // Connection pool settings
   waitForConnections: true,
-  connectionLimit: 10,
-  queueLimit: 0
+  connectionLimit: 5,
+  queueLimit: 0,
+  connectTimeout: 10000,
+  acquireTimeout: 10000,
+  
+  // MySQL settings
+  charset: 'utf8mb4',
+  timezone: '+06:00',
+  dateStrings: true
 });
+
+// Test database connection on startup
+export const testDBConnection = async () => {
+  try {
+    const connection = await db.getConnection();
+    console.log('✅ Database connected to FreeDB.tech');
+    
+    // Check if tables exist
+    const [tables] = await connection.query(`
+      SELECT TABLE_NAME 
+      FROM INFORMATION_SCHEMA.TABLES 
+      WHERE TABLE_SCHEMA = ?
+    `, [process.env.DB_NAME || 'freedb_lichu-arafatstech']);
+    
+    console.log('📊 Existing tables:', tables.map(t => t.TABLE_NAME));
+    
+    // Create tables if they don't exist
+    if (tables.length === 0) {
+      console.log('🛠️ Creating database tables...');
+      await createTables(connection);
+    }
+    
+    connection.release();
+    return { success: true, tables: tables.length };
+  } catch (error) {
+    console.error('❌ Database connection error:', error.message);
+    console.error('🔧 Config:', {
+      host: process.env.DB_HOST,
+      user: process.env.DB_USER,
+      database: process.env.DB_NAME,
+      errorCode: error.code
+    });
+    return { success: false, error: error.message };
+  }
+};
+
+// Create necessary tables
+const createTables = async (connection) => {
+  try {
+    // Posts table
+    await connection.query(`
+      CREATE TABLE IF NOT EXISTS posts (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        title VARCHAR(255) NOT NULL,
+        content TEXT,
+        image_data LONGTEXT,
+        video_url VARCHAR(500),
+        slug VARCHAR(255) UNIQUE,
+        published BOOLEAN DEFAULT 1,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        INDEX idx_slug (slug),
+        INDEX idx_created (created_at)
+      )
+    `);
+    
+    // Users table
+    await connection.query(`
+      CREATE TABLE IF NOT EXISTS users (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        username VARCHAR(50) UNIQUE NOT NULL,
+        password_hash VARCHAR(255) NOT NULL,
+        role ENUM('admin', 'editor') DEFAULT 'editor',
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        INDEX idx_username (username)
+      )
+    `);
+    
+    // Insert default admin user if not exists
+    const adminPassword = process.env.ADMIN_PASSWORD || 'admin123';
+    const hashedPassword = await bcrypt.hash(adminPassword, 10);
+    
+    await connection.query(`
+      INSERT IGNORE INTO users (username, password_hash, role) 
+      VALUES (?, ?, 'admin')
+    `, [process.env.ADMIN_USERNAME || 'admin', hashedPassword]);
+    
+    console.log('✅ Tables created successfully');
+    return true;
+  } catch (error) {
+    console.error('❌ Table creation error:', error.message);
+    return false;
+  }
+};
 
 // Authentication middleware
 export const isAuthenticated = (req, res, next) => {
@@ -37,45 +133,40 @@ export const sanitizeTitle = (title) => {
 
 // Error handler
 export const errorHandler = (err, req, res, next) => {
-  console.error('Error:', err.stack);
+  console.error('🔥 Error:', err.stack);
   
-  const statusCode = err.statusCode || 500;
-  const message = err.message || 'Something went wrong!';
-  
-  // If it's an API request, return JSON
-  if (req.xhr || req.headers.accept?.includes('application/json')) {
-    return res.status(statusCode).json({
-      error: {
-        message,
-        status: statusCode,
-        ...(process.env.NODE_ENV === 'development' && { stack: err.stack })
-      }
+  // Database connection error
+  if (err.code === 'ECONNREFUSED' || err.code === 'ETIMEDOUT') {
+    return res.status(500).render('error', {
+      title: 'Database Error',
+      message: 'Could not connect to database. Please check your connection.',
+      error: process.env.NODE_ENV === 'development' ? err : {}
     });
   }
   
-  // Otherwise render error page
-  res.status(statusCode).render('error', {
+  // Generic error
+  res.status(err.status || 500).render('error', {
     title: 'Error',
-    message,
+    message: err.message || 'Something went wrong!',
     error: process.env.NODE_ENV === 'development' ? err : {}
   });
 };
 
-// Hash password (if needed)
+// Hash password
 export const hashPassword = async (password) => {
   return await bcrypt.hash(password, 10);
 };
 
-// Compare password (if needed)
+// Compare password
 export const comparePassword = async (password, hash) => {
   return await bcrypt.compare(password, hash);
 };
 
-// Optional: S3 Client for cloud storage (remove if not using)
-export const s3Client = process.env.AWS_ACCESS_KEY_ID ? new S3Client({
-  region: process.env.AWS_REGION || 'us-east-1',
-  credentials: {
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY
+// Initialize database on import
+testDBConnection().then(result => {
+  if (result.success) {
+    console.log('🎉 Database initialization complete');
+  } else {
+    console.log('⚠️ Database initialization failed:', result.error);
   }
-}) : null;
+});

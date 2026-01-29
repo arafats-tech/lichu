@@ -1,0 +1,73 @@
+<%
+// Site information
+const site_title = "Arafat's Tech";
+const site_keywords_base = "iarafat.store,iarafat,arafat,arafat rahman,arfat rahman nahid,Md. Arafat Rahman Nahid";
+const site_author = "Md. Arafat Rahman Nahid";
+const site_charset = "UTF-8";
+
+// Favicon
+const favicon = "/logo.ico"; // Change this to the correct path
+
+// Base URL for Open Graph metadata
+const baseUrl = "https://iarafat.store"; // Update with your actual base URL
+const og_type = "website"; // Default Open Graph type
+
+// Default metadata for pages
+let og_url = `${baseUrl}/${currentPage}`; // Default og_url
+let og_image = "https://storage.arnms.com/og/Arafat-app.png"; // Default og_image
+let og_title = site_title; // Default title
+let og_description = "Stay tuned for more updates!"; // Default description
+let keywords = site_keywords_base; // Default keywords
+
+if (currentPage === 'post' && typeof postSlug !== 'undefined') {
+    // Dynamic metadata for post pages
+    og_url = `${baseUrl}/p/${postSlug}`; // Dynamic URL for post
+    og_image = `https://storage.arnms.com/og/app/${postSlug}.png`; // Dynamic image for post
+    og_title = postTitle || "Untitled Post"; // Use dynamic title or fallback
+    og_description = postContent ? postContent.substring(0, 150) + '...' : "Read this post on Arafat's Tech."; // Dynamic description with a fallback
+
+    // Generate dynamic keywords by combining base keywords with title and content
+    const contentKeywords = postContent
+        ? postContent
+            .split(' ') // Split content into words
+            .filter((word, index, arr) => word.length > 3 && arr.indexOf(word) === index) // Remove short words and duplicates
+            .slice(0, 10) // Limit to the first 10 unique words
+            .join(', ') 
+        : "";
+    keywords = `${site_keywords_base}, ${postTitle}, ${contentKeywords}`; // Combine base keywords with title and content keywords
+}
+
+// Page-specific metadata
+const pageMeta = {
+   home: {
+        title: site_title,
+        description: "Arafat's Tech is the all-in solution for everything. Stay tuned.",
+        keywords: site_keywords_base,
+    },
+    post: {
+        title: og_title,
+        description: og_description,
+        keywords: keywords,
+    },
+    // Add more pages as needed
+};
+%>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="<%= site_charset %>">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="<%= pageMeta[currentPage]?.description || 'Explore amazing content on Arafat\'s Tech.' %>">
+    <meta name="keywords" content="<%= pageMeta[currentPage]?.keywords || site_keywords_base %>">
+    <meta name="author" content="<%= site_author %>">
+    <link rel="icon" type="image/x-icon" href="<%= favicon %>"> <!-- Favicon Link -->
+
+    <!-- Open Graph Tags -->
+    <meta property="og:title" content="<%= pageMeta[currentPage]?.title || site_title %>" />
+    <meta property="og:description" content="<%= pageMeta[currentPage]?.description || 'Explore amazing content on Arafat\'s Tech.' %>" />
+    <meta property="og:image" content="<%= og_image %>" />
+    <meta property="og:url" content="<%= og_url %>" />
+    <meta property="og:type" content="<%= og_type %>" />
+
+    <title><%= pageMeta[currentPage]?.title || site_title %></title>

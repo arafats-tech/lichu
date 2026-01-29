@@ -1,0 +1,57 @@
+<%- include('meta', { currentPage: 'home' }) %>
+<link rel="stylesheet" href="https://storage.arnms.com/style/app/index.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <%- include('header') %>
+<div class="container mt-3">
+        <pre class="text-center mb-4">Home Page || Arafat's Tech || 2024<small style="align:center;">  </small></pre>
+        
+ <% if (posts.length > 0) { %>
+            <div class="row">
+                <% posts.forEach(post => { 
+                    const imageUrl = `/ai?title=${encodeURIComponent(post.title)}`; // URL for image generation
+                    const createdAt = new Date(post.createdAt); // Create Date object from createdAt
+                    const timeAgo = (function() {
+                        const now = new Date();
+                        const seconds = Math.floor((now - createdAt) / 1000);
+                        let interval = Math.floor(seconds / 31536000);
+                        if (interval > 1) return interval + ' years ago';
+                        interval = Math.floor(seconds / 2592000);
+                        if (interval > 1) return interval + ' months ago';
+                        interval = Math.floor(seconds / 86400);
+                        if (interval > 1) return interval + ' days ago';
+                        interval = Math.floor(seconds / 3600);
+                        if (interval > 1) return interval + ' hours ago';
+                        interval = Math.floor(seconds / 60);
+                        if (interval > 1) return interval + ' minutes ago';
+                        return seconds < 1 ? 'Just now' : seconds + ' seconds ago';
+                    })();
+                %>
+                    <div class="col-md-4 mb-4">
+                        <div class="card shadow-sm">
+                            <a href="/p/<%= post.slug %>" style> <!-- Make the iframe clickable -->
+                                <img src="https://storage.arnms.com/og/app/<%= post.slug %>.png" class="card-iframe" title="<%= post.slug %>" scrolling="no"></img>
+                            </a>
+                            <a href="/p/<%= post.slug %>" style="text-decoration:none;"><div style="text-align:center;>
+                            <small"> <%= post.title %><!--<br><%= timeAgo %>--></small>
+                            </div></a>
+                            <!--<div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                               <small style="text-align:center;"> <%= post.title %><br><%= timeAgo %></small>
+                                  <!--  <small class="text-muted">
+                                        <i class="fas fa-clock icon"></i> <%= timeAgo %>
+                                    </small>
+                                    <a href="/p/<%= post.slug %>" class="btn btn-critical ml-auto">
+                                        <i class="fas fa-arrow-right"></i> Read Now
+                                    </a>
+                                </div>
+                            </div>-->
+                        </div>
+                    </div>
+                <% }); %>
+            </div>
+        <% } else { %>
+            <p class="text-center">Will be back after May 2025</p>
+        <% } %>
+    </div>
+<%- include('footer') %>

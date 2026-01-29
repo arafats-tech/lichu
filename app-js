@@ -1,0 +1,371 @@
+const express = require('express');
+const path = require('path');
+const mysql = require('mysql2/promise');
+const dotenv = require('dotenv');
+const multer = require('multer');
+const session = require('express-session');
+const bcrypt = require('bcrypt');
+const { createCanvas, registerFont } = require('canvas');
+const fs = require('fs');
+
+// Load environment variables
+dotenv.config();
+const app = express();
+const PORT = process.env.PORT || 8080;
+
+
+
+
+
+// Register the Noto Sans Bengali font
+const banglaFontPath = path.join(__dirname, 'public/static/NotoSansBengali-Regular.ttf');
+try {
+    registerFont(banglaFontPath, { family: 'Noto Sans Bengali' });
+    console.log("Bangla font loaded successfully.");
+} catch (error) {
+    console.error("Failed to register Bangla font:", error);
+}
+
+// Function to adjust font size based on text width
+const adjustFontSize = (ctx, text, maxWidth, initialFontSize, fontFamily) => {
+    let fontSize = initialFontSize;
+    ctx.font = `${fontSize}px ${fontFamily}`;
+    while (ctx.measureText(text).width > maxWidth && fontSize > 10) {
+        fontSize -= 1; // Decrease font size if text is too wide
+        ctx.font = `${fontSize}px ${fontFamily}`;
+    }
+    return fontSize;
+};
+
+// Function to select a random background color
+const getRandomBackground = () => {
+    const colors = ['#ff5733', '#33ff57', '#3357ff', '#ffff33', '#ff33ff', '#33ffff'];
+    const randomColor = colors[Math.floor(Math.random() * colors.length)];
+    return randomColor;
+};
+
+// Function to determine font color based on background color
+const getFontColor = (bgColor) => {
+    const r = parseInt(bgColor.slice(1, 3), 16);
+    const g = parseInt(bgColor.slice(3, 5), 16);
+    const b = parseInt(bgColor.slice(5, 7), 16);
+    const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+    return luminance > 0.5 ? '#000000' : '#FFFFFF';
+};
+
+// Generate an image with customized text and return it as a data URL
+const generateImage = (title, banglaTitle, bgColor) => {
+    const width = 800;
+    const height = 300;
+    const canvas = createCanvas(width, height);
+    const ctx = canvas.getContext('2d');
+
+    // Set background color dynamically
+    ctx.fillStyle = bgColor || getRandomBackground();
+    ctx.fillRect(0, 0, width, height);
+
+    // Determine font color based on background
+    const fontColor = getFontColor(ctx.fillStyle);
+
+    // Adjust font size for English title
+    const englishFontSize = adjustFontSize(ctx, title, width - 40, 30, 'Courier New, monospace');
+    ctx.fillStyle = fontColor;
+    ctx.font = `bold ${englishFontSize}px "Courier New", monospace`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    const englishYPosition = height / 2 - englishFontSize;
+    ctx.fillText(title, width / 2, englishYPosition);
+
+    // Adjust font size for Bengali title
+    const banglaFontSize = adjustFontSize(ctx, banglaTitle, width - 40, 50, 'Noto Sans Bengali');
+    ctx.font = `bold ${banglaFontSize}px "Noto Sans Bengali"`;
+    const banglaYPosition = englishYPosition + englishFontSize + banglaFontSize + 10;
+    ctx.fillText(banglaTitle, width / 2, banglaYPosition);
+
+    // Return image as data URL
+    return canvas.toDataURL();
+};
+
+// Endpoint to generate and display the image directly in HTML
+app.get('/ai', (req, res) => {
+    const title = req.query.title || 'Default Title';
+    const banglaTitle = req.query.banglaTitle || '';
+    const bgColor = req.query.bgColor || getRandomBackground();
+
+    try {
+        const imageDataUrl = generateImage(title, banglaTitle, bgColor);
+
+        // Display the image in the response
+        res.send(`
+            <html>
+                <head>
+                    <title>${title}</title>
+                    <style>
+                        body { 
+                            background-color: ${bgColor}; 
+                            color: ${getFontColor(bgColor)}; 
+                            text-align: center;
+                            margin: 0; 
+                        }
+                        img { max-width: 100%; height: auto; }
+                    </style>
+                </head>
+                <body>
+                    <img src="${imageDataUrl}" alt="${title}">
+                </body>
+            </html>
+        `);
+    } catch (error) {
+        console.error("Error generating image:", error);
+        res.status(500).send("Error generating image. Please check the console for details.");
+    }
+});
+
+
+
+
+
+
+
+
+
+
+const sanitizeTitle = (title) => {
+    return title
+        .trim()
+        .replace(/\s+/g, '-')
+        .replace(/[^\w\u0980-\u09FF\-]/g, '')
+        .replace(/^-|-$/g, '')
+        .toLowerCase();
+};
+
+// MySQL connection pool
+const db = mysql.createPool({
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME,
+});
+
+// Middleware
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
+app.use(express.static(path.join(__dirname, 'public')));
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'views'));
+
+// Session configuration
+app.use(session({
+    secret: process.env.SESSION_SECRET || 'default_secret',
+    resave: false,
+    saveUninitialized: true,
+    cookie: { secure: process.env.NODE_ENV === 'production', httpOnly: true }
+}));
+
+// Ensure 'uploads' directory exists
+if (!fs.existsSync('uploads')) fs.mkdirSync('uploads');
+
+// Configure multer for file uploads
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => cb(null, 'uploads/'),
+    filename: (req, file, cb) => {
+        const sanitizedTitle = sanitizeTitle(req.body.title);
+        const extension = path.extname(file.originalname);
+        cb(null, `${sanitizedTitle}${extension}`);
+    },
+});
+const upload = multer({ storage });
+
+// Middleware for checking authentication
+const isAuthenticated = (req, res, next) => {
+    if (req.session.user) return next();
+    res.redirect('/l');
+};
+
+// Centralized error handling
+const errorHandler = (err, req, res, next) => {
+    console.error(err);
+    res.status(500).send('Something went wrong. Please try again later.');
+};
+
+// Routes
+app.get('/ai', (req, res) => {
+    const title = req.query.title || 'Default Title';
+    const imageDataUrl = generateImage(title);
+    res.send(`<img src="${imageDataUrl}" alt="${title}">`);
+});
+
+
+app.get('/l', (req, res) => res.render('l', { title: 'Login', errorMessage: null }));
+
+app.post('/l', async (req, res, next) => {
+    const { username, password } = req.body;
+    try {
+        const [results] = await db.query('SELECT * FROM users WHERE username = ?', [username]);
+        if (results.length > 0 && await bcrypt.compare(password, results[0].password)) {
+            req.session.user = { id: results[0].id, username: results[0].username };
+            return res.redirect('/16192224');
+        }
+        res.render('l', { title: 'Login', errorMessage: 'Invalid credentials' });
+    } catch (err) {
+        next(err);
+    }
+});
+
+app.get('/r', (req, res) => res.render('r', { title: 'Register', errorMessage: null }));
+
+app.post('/r', async (req, res) => {
+    const { username, password, accessUsername, accessPassword } = req.body;
+    if (accessUsername !== process.env.ACCESS_USERNAME || accessPassword !== process.env.ACCESS_PASSWORD) {
+        return res.render('r', { title: 'Register', errorMessage: 'Invalid registration credentials' });
+    }
+    try {
+        const [existingUser] = await db.query('SELECT * FROM users WHERE username = ?', [username]);
+        if (existingUser.length > 0) {
+            return res.render('r', { title: 'Register', errorMessage: 'Username already taken' });
+        }
+        const hashedPassword = await bcrypt.hash(password, 10);
+        await db.query('INSERT INTO users (username, password) VALUES (?, ?)', [username, hashedPassword]);
+        res.redirect('/l');
+    } catch (error) {
+        res.status(500).send('Error ring user. Please try again.');
+    }
+});
+
+app.get('/16192224', isAuthenticated, async (req, res, next) => {
+    try {
+        const [results] = await db.query('SELECT * FROM posts');
+        res.render('16192224', { title: 'Dashboard', posts: results, sanitizeTitle });
+    } catch (err) {
+        next(err);
+    }
+});
+
+// Index Route - Show posts on homepage
+app.get('/', async (req, res, next) => {
+    try {
+        const [results] = await db.query('SELECT * FROM posts ORDER BY id DESC');
+        res.render('index', { title: 'Home', posts: results, sanitizeTitle });
+    } catch (err) {
+        next(err);
+    }
+});
+// Route to render admission.ejs
+app.get('/admission', (req, res) => {
+    res.render('admission', { title: 'Admission Page' }); // Pass title dynamically if needed
+});
+
+// Admin Panel Route - Show posts in 16192224 panel
+app.get('/16192224', isAuthenticated, async (req, res, next) => {
+    try {
+        const [results] = await db.query('SELECT * FROM posts');
+        res.render('16192224', { title: 'Dashboard', posts: results, sanitizeTitle });
+    } catch (err) {
+        next(err);
+    }
+});
+
+
+// Add Post Route - Get form for adding posts
+app.get('/16192224/add', isAuthenticated, (req, res) => {
+    res.render('add-post', { title: 'Add Post' });
+});
+
+app.post('/16192224/add', isAuthenticated, upload.single('image'), async (req, res, next) => {
+    const { title, content, video } = req.body;
+    const imagePath = req.file ? `/uploads/${sanitizeTitle(title)}${path.extname(req.file.originalname)}` : null;
+    const postSlug = sanitizeTitle(title);
+
+    try {
+        await db.query('INSERT INTO posts (title, content, image, video, slug) VALUES (?, ?, ?, ?, ?)', [title, content, imagePath, video, postSlug]);
+        res.redirect('/16192224');
+    } catch (err) {
+        next(err);
+    }
+});
+
+// View Full Post Route
+app.get('/p/:slug', async (req, res, next) => {
+    const postSlug = req.params.slug;
+
+    try {
+        const [results] = await db.query('SELECT * FROM posts WHERE slug = ?', [postSlug]);
+        if (results.length === 0) return res.status(404).send('Post not found.');
+        res.render('p', { title: results[0].title, post: results[0], sanitizeTitle });
+    } catch (err) {
+        next(err);
+    }
+});
+
+// Edit Post Route - Get form for editing posts
+app.get('/16192224/edit/:id', isAuthenticated, async (req, res, next) => {
+    const postId = req.params.id;
+
+    try {
+        const [results] = await db.query('SELECT * FROM posts WHERE id = ?', [postId]);
+        if (results.length === 0) return res.status(404).send('Post not found.');
+        res.render('edit-post', { title: 'Edit Post', post: results[0], sanitizeTitle });
+    } catch (err) {
+        next(err);
+    }
+});
+
+app.post('/16192224/edit/:id', isAuthenticated, upload.single('image'), async (req, res, next) => {
+    const postId = req.params.id;
+    const { title, content, video } = req.body;
+    const imagePath = req.file ? `/uploads/${sanitizeTitle(title)}${path.extname(req.file.originalname)}` : null;
+    const postSlug = sanitizeTitle(title);
+
+    try {
+        await db.query('UPDATE posts SET title = ?, content = ?, image = ?, video = ?, slug = ? WHERE id = ?', [title, content, imagePath, video, postSlug, postId]);
+        res.redirect('/16192224');
+    } catch (err) {
+        next(err);
+    }
+});
+
+// Delete Post Route
+app.get('/16192224/delete/:id', isAuthenticated, async (req, res, next) => {
+    const postId = req.params.id;
+
+    try {
+        await db.query('DELETE FROM posts WHERE id = ?', [postId]);
+        res.redirect('/16192224');
+    } catch (err) {
+        next(err);
+    }
+});
+
+//Define the route for admission-info
+app.get('/admission-info', (req, res) => {
+    // You can pass any necessary data to the view here
+    res.render('admission-info');
+});
+
+
+// Route to show dropdown of posts and select one to edit
+app.get('/16192224/edit', isAuthenticated, async (req, res, next) => {
+    try {
+        const [posts] = await db.query('SELECT id, title FROM posts');
+        const selectedPostId = req.query.postId;
+        let selectedPost = null;
+
+        if (selectedPostId) {
+            const [results] = await db.query('SELECT * FROM posts WHERE id = ?', [selectedPostId]);
+            selectedPost = results.length > 0 ? results[0] : null;
+        }
+
+        res.render('edit-post-dropdown', { title: 'Edit Post', posts, selectedPost, sanitizeTitle });
+    } catch (err) {
+        next(err);
+    }
+});
+
+// Start server
+app.listen(PORT, () => {
+    console.log(`Server is running on http://localhost:${PORT}`);
+});
+
+// Error handling middleware
+app.use(errorHandler);

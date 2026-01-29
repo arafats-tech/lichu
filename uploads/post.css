@@ -1,0 +1,166 @@
+
+        /* General and body styling with new font */
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh; /* Ensure body takes full height */
+            background-color: white !important; /*#f8f9fa;  Light gray background */
+            color: #343a40; /* Dark gray text for readability */
+            font-family: 'Poppins', sans-serif; /* Poppins font for modern look */
+            line-height: 1.5; /* Adjusted line height for better readability */
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Container and heading styles */
+        .content__container {
+            flex: 1; /* Allow this to take available space */
+            width: 100%; /* Full width */
+            margin: 0 auto; /* Centering container */
+           padding: 03px; /* Added padding for spacing */
+            border-radius: 0px;
+            background: #ffffff; /* White background for content */
+            /*box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);*/
+        }
+
+        .content__container h1 {
+            font-size: 1.4em; /* Adjusted heading size for visibility */
+            color: black; /* Blue color for headings */
+            text-align: center;
+            margin: 13px 0; /* Reduced margin for top and bottom */
+            font-weight: 500; /* Slightly lighter font weight for heading */
+        }
+
+       /* Video player container */
+.content__video-container {
+    position: relative;
+    width: 90%; /* Decreased width to 90% of the parent container */
+    max-width: 800px; /* Optional: set a maximum width for larger screens */
+    height: 0;
+    padding-bottom: 56.25%; /* Aspect ratio for 16:9 video */
+    margin: 14px auto; /* Center the container with automatic horizontal margin */
+    background-color: #e0e0e0; /* Light gray placeholder */
+    border-radius: 8px; /* Smoother corners */
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+}
+
+/* Optional: Responsiveness for smaller screens */
+@media (max-width: 768px) {
+    .content__video-container {
+        margin: 10px auto; /* Adjust margin for smaller screens */
+        width: 95%; /* Slightly increase the width on smaller screens */
+    }
+}
+
+        .content__video-container video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%; /* Full height for the video */
+            object-fit: cover; /* Cover to maintain aspect ratio */
+            border-radius: 3px;
+        }
+
+        /* Post content padding */
+        .content__padding {
+            padding: 10px; /* Increased padding for content */
+            font-size: 1.1em; /* Adjusted font size for readability */
+            line-height: 1.5; /* Improved line height */
+            color: #495057; /* Darker text for contrast */
+            font-weight: 400; /* Regular font weight for content */
+            text-align: justify; /* Justify content for better layout */
+        }
+
+        /* Post meta styling */
+        .content__post-meta {
+            margin-top: 15px;
+            margin-bottom: 15px;
+            font-size: 0.7em; /* Slightly smaller font size */
+            color: #6c757d; /* Grey color for metadata */
+            display: flex;
+            gap: 20px; /* Adjusted gap */
+            flex-direction: row;
+            justify-content:center; /* Center align meta info */
+        }
+
+        .content__upload-info i {
+            color: #007bff; /* Icon color to match heading */
+            margin-right: 2px;
+        }
+
+        /* Grid Back to Home button */
+        .btn-grid {
+            display: grid;
+            place-items: center;
+            width: 100%; /* Full width */
+            margin: 0 auto; /* Centering */
+        }
+
+        .btn-grid a {
+            padding: 10px 20px; /* Increased padding for button */
+            font-size: inherit; /* Use inherited font size */
+            color: black; /* White text color */
+            background-color: white; /* Blue background */
+            border: none;
+            border-radius: 5px;
+            text-align: center;
+            text-decoration: none;
+            font-weight: 500; /* Medium weight for button text */
+            transition: background-color 0.3s, transform 0.3s; /* Smooth transitions */
+            cursor: pointer;
+           /* box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3); *//* Subtle shadow for depth */
+        }
+
+        .btn-grid a:hover {
+            background-color: white; /* Darker blue on hover */
+            transform: scale(1.05); /* Scale effect on hover */
+        }
+        
+         /* Iframe Styles */
+.card-iframe {
+    width: 100%;
+    height: 120px; /* Reduced height */
+    border: none; /* Remove iframe border */
+    border-radius: 15px; /* Matching rounded corners */
+    overflow: hidden; /* Prevent scrolling */
+}
+        
+  /* Breadcrumb container */
+    .breadcrumb {
+      display: flex;
+      align-items: center;
+     /* padding: 10px 10px; */
+      background: #f8f9fa; /* Matches body background */
+      max-width: 800px;
+      margin: 0px 7px; *//* Top spacing and left alignment */
+    }
+
+    /* Breadcrumb links */
+    .breadcrumb a {
+      text-decoration: none;
+      color: #007bff;
+      font-weight: 600;
+      transition: color 0.3s ease, transform 0.2s ease;
+    }
+    .breadcrumb a:hover {
+      color: #0056b3;
+      transform: scale(1.05);
+    }
+
+    /* Separator */
+    .breadcrumb span.separator {
+      margin: 0 10px;
+      color: #b0b0b0;
+      font-size: 14px;
+    }
+
+    /* Icon styling */
+    .breadcrumb .icon {
+      margin-right: 8px;
+      color: #007bff;
+      font-size: 18px;
+      }
+      
+      

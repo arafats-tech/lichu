@@ -1,0 +1,163 @@
+<%- include('meta', { 
+    currentPage: 'post', 
+    postSlug: post.slug, 
+    postTitle: post.title, 
+    postContent: post.content 
+}) %>
+ 
+  
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://storage.arnms.com/style/app/post.css">
+    
+
+
+    <!-- Import Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <%- include('header') %>
+     <!-- Breadcrumb Container --><!--
+  <div id="breadcrumb" class="breadcrumb"></div><br>
+
+  <script>
+    // Breadcrumb Data
+    const breadcrumbData = [
+      { name: "::", url: "/", icon: '<i class="fas fa-home"></i>' },
+      { name: "<%= post.title %>", url: "" }
+    ];
+
+    // Generate Breadcrumb HTML
+    const breadcrumbContainer = document.getElementById("breadcrumb");
+    breadcrumbContainer.innerHTML = breadcrumbData
+      .map((item, index) => {
+        const isLast = index === breadcrumbData.length - 1;
+        return `
+          ${item.icon ? `<span class="icon">${item.icon}</span>` : ""}
+          ${!isLast 
+            ? `<a href="${item.url}">${item.name}</a>` 
+            : `<span>${item.name}</span>`}
+          ${!isLast ? '<span class="separator">›</span>' : ""}
+        `;
+      })
+      .join("");
+  </script>-->
+
+    <div class="content__container">
+       <h2 style="text-align:center;"><%= post.title %></h2>
+          <% if (post.image) { %>
+    <% if (post.image.endsWith('.mp4')) { %>
+        <div class="content__video-container">
+            <video controls preload="auto">
+                <source src="<%= post.image %>" type="video/mp4">
+                
+            </video>
+        </div>
+    <% } else if (post.image.endsWith('.jpg') || post.image.endsWith('.png') || post.image.endsWith('.gif')) { %>
+        <div class="content__photo-container">
+            <img src="<%= post.image %>" alt="<%= post.title %>" style="width: 100%; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+        </div>
+    <% } %>
+<% } %>
+
+         <!-- Post Meta Information -->
+        <div class="content__post-meta">
+            <% if (post.createdAt) { %>
+                <div class="content__upload-info">
+                    <i class="fa fa-calendar"></i> 
+                    <script>
+                        // Format posted date and time
+                        const createdAt = new Date("<%= post.createdAt %>");
+                        const options = {
+                            year: 'numeric',
+                            month: 'short',
+                            day: 'numeric',
+                            weekday: 'short',
+                            hour: 'numeric',
+                            minute: 'numeric',
+                            hour12: true
+                        };
+                        document.write("" + createdAt.toLocaleString('en-US', options));
+                    </script>
+                </div>
+
+               <!-- Time since posted -->
+                <div class="content__upload-info">
+                    <i class="fa fa-clock"></i>
+                    <script>
+                        function timeSince(date) {
+                            const seconds = Math.floor((new Date() - date) / 1000);
+                            let interval = Math.floor(seconds / 31536000);
+                            if (interval >= 1) return interval + " year" + (interval > 1 ? "s" : "") + " ago";
+                            interval = Math.floor(seconds / 2592000);
+                            if (interval >= 1) return interval + " month" + (interval > 1 ? "s" : "") + " ago";
+                            interval = Math.floor(seconds / 86400);
+                            if (interval >= 1) return interval + " day" + (interval > 1 ? "s" : "") + " ago";
+                            interval = Math.floor(seconds / 3600);
+                            if (interval >= 1) return interval + " hour" + (interval > 1 ? "s" : "") + " ago";
+                            interval = Math.floor(seconds / 60);
+                            if (interval >= 1) return interval + " minute" + (interval > 1 ? "s" : "") + " ago";
+                            return "Just now";
+                        }
+                        document.write("" + timeSince(createdAt));
+                    </script>
+                </div>
+            <% } else { %>
+                <p><small>Upload date not available</small></p>
+            <% } %>
+        </div>
+        
+         <!-- <iframe src="https://iarafat.store/ai?title=<%= post.title %>" class="card-iframe" title="<%= post.title %>" scrolling="no"></iframe>-->
+
+      
+
+        <div class="content__padding"><%- post.content %></div>
+        
+<!--<div class="fb-comments" 
+  data-href="https://iarafat.store/p/<%= post.slug %>" 
+  data-width="600" 
+  data-numposts="0" 
+  data-order-by="time">
+</div>-->
+
+<!--<h2>How was that?</h2>-->
+  <div class="sharethis-inline-reaction-buttons"></div>     
+<!--<h2>Let us know what you think</h2>-->
+<div class="fb-comments" 
+  data-href="https://irafat.store/p/<%= post.slug %>" 
+  data-width="580" 
+  data-numposts="20" 
+  data-order-by="time">
+</div><!-- AddToAny BEGIN -->
+<div class="a2a_kit a2a_kit_size_32 a2a_default_style">
+<a class="a2a_dd" href="https://www.addtoany.com/share"></a>
+<a class="a2a_button_facebook"></a>
+<a class="a2a_button_whatsapp"></a>
+<a class="a2a_button_facebook_messenger"></a>
+<a class="a2a_button_email"></a>
+<a class="a2a_button_sms"></a>
+<a class="a2a_button_telegram"></a>
+</div>
+<script defer src="https://static.addtoany.com/menu/page.js"></script>
+<!-- AddToAny END -->
+        <!-- Back to Home button after date -->
+        <div class="btn-grid">
+            <a href="/">Back to Home</a>
+        </div>
+    </div>
+<!-- Video Scripts & video things-->
+<link href="https://cdn.plyr.io/3.7.8/plyr.css" rel="stylesheet" />
+<script src="https://cdn.plyr.io/3.7.8/plyr.polyfilled.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<!--<script type="text/javascript">
+  document.addEventListener('DOMContentLoaded', () => {
+    const player = new Plyr('video', { captions: { active: true } });
+
+    // Expose player globally for console debugging
+    window.player = player;
+  });
+</script>-->
+    <%- include('footer') %>
+    
+</body>
+</html>

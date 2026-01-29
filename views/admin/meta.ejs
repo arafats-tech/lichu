@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<%- include('../partials/head') %>
+<body>
+    <div class="container">
+        <h1>Set Metadata for Posts</h1>
+        <form action="/admin/meta" method="POST">
+            <div class="form-group">
+                <label for="postSelect">Select Post</label>
+                <select class="form-control" id="postSelect" name="postId" onchange="fetchMetadata(this.value)">
+                    <option value="">-- Select a Post --</option>
+                    <% posts.forEach(function(post) { %>
+                        <option value="<%= post.id %>"><%= post.title %></option>
+                    <% }); %>
+                </select>
+            </div>
+            <div id="metadataFields" style="display: none;">
+                <div class="form-group">
+                    <label for="title">Page Title</label>
+                    <input type="text" class="form-control" id="title" name="title" required>
+                </div>
+                <div class="form-group">
+                    <label for="description">Description</label>
+                    <textarea class="form-control" id="description" name="description" rows="4" required></textarea>
+                </div>
+                <!-- Additional metadata fields can go here -->
+                <button type="submit" class="btn btn-primary">Save Metadata</button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        function fetchMetadata(postId) {
+            if (postId) {
+                // Use AJAX to fetch the metadata for the selected post
+                fetch(`/admin/meta/${postId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        document.getElementById('title').value = data.title || '';
+                        document.getElementById('description').value = data.description || '';
+                        // Populate other metadata fields
+                        document.getElementById('metadataFields').style.display = 'block';
+                    });
+            } else {
+                // Reset fields if no selection
+                document.getElementById('metadataFields').style.display = 'none';
+                document.getElementById('title').value = '';
+                document.getElementById('description').value = '';
+            }
+        }
+    </script>
+</body>
+</html>

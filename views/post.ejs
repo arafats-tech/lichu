@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title><%= post.title %> | Arafat's Tech</title>
+    <%- include('meta', { currentPage: 'post' }) %>
+
+    <!-- Import Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+    <style>
+        /* General and body styling with new font */
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh; /* Ensure body takes full height */
+            background-color: #f8f9fa; /* Light gray background */
+            color: #343a40; /* Dark gray text for readability */
+            font-family: 'Poppins', sans-serif; /* Poppins font for modern look */
+            line-height: 1.5; /* Adjusted line height for better readability */
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Container and heading styles */
+        .content__container {
+            flex: 1; /* Allow this to take available space */
+            width: 100%; /* Full width */
+            margin: 0 auto; /* Centering container */
+            padding: 20px; /* Added padding for spacing */
+            border-radius: 8px;
+            background: #ffffff; /* White background for content */
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .content__container h1 {
+            font-size: 1.6em; /* Adjusted heading size for visibility */
+            color: #007bff; /* Blue color for headings */
+            text-align: center;
+            margin: 10px 0; /* Reduced margin for top and bottom */
+            font-weight: 500; /* Slightly lighter font weight for heading */
+        }
+
+        /* Video player container */
+        .content__video-container {
+            position: relative;
+            width: 100%;
+            padding-bottom: 56.25%; /* Aspect ratio for video */
+            margin: 20px 0; /* Margin for spacing */
+            background-color: #e0e0e0; /* Light gray for video placeholder */
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .content__video-container video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%; /* Full height for the video */
+            object-fit: cover; /* Cover to maintain aspect ratio */
+            border-radius: 8px;
+        }
+
+        /* Post content padding */
+        .content__padding {
+            padding: 15px; /* Increased padding for content */
+            font-size: 1.1em; /* Adjusted font size for readability */
+            line-height: 1.5; /* Improved line height */
+            color: #495057; /* Darker text for contrast */
+            font-weight: 400; /* Regular font weight for content */
+            text-align: justify; /* Justify content for better layout */
+        }
+
+        /* Post meta styling */
+        .content__post-meta {
+            margin-top: 15px;
+            margin-bottom: 35px;
+            font-size: 0.9em; /* Slightly smaller font size */
+            color: #6c757d; /* Grey color for metadata */
+            display: flex;
+            gap: 20px; /* Adjusted gap */
+            flex-direction: row;
+            justify-content: center; /* Center align meta info */
+        }
+
+        .content__upload-info i {
+            color: #007bff; /* Icon color to match heading */
+            margin-right: 2px;
+        }
+
+        /* Grid Back to Home button */
+        .btn-grid {
+            display: grid;
+            place-items: center;
+            width: 100%; /* Full width */
+            margin: 0 auto; /* Centering */
+        }
+
+        .btn-grid a {
+            padding: 10px 20px; /* Increased padding for button */
+            font-size: inherit; /* Use inherited font size */
+            color: #ffffff; /* White text color */
+            background-color: #007bff; /* Blue background */
+            border: none;
+            border-radius: 5px;
+            text-align: center;
+            text-decoration: none;
+            font-weight: 500; /* Medium weight for button text */
+            transition: background-color 0.3s, transform 0.3s; /* Smooth transitions */
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3); /* Subtle shadow for depth */
+        }
+
+        .btn-grid a:hover {
+            background-color: #0056b3; /* Darker blue on hover */
+            transform: scale(1.05); /* Scale effect on hover */
+        }
+    </style>
+</head>
+<body>
+    <%- include('header') %>
+
+    <div class="content__container">
+        <h1><%= post.title %></h1>
+
+        <% if (post.image) { %>
+            <div class="content__video-container">
+                <video controls preload="auto">
+                    <source src="<%= post.image %>" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+            </div>
+        <% } %>
+
+        <% if (post.videoUrl) { %>
+            <div class="content__video-container">
+                <video controls preload="auto">
+                    <source src="<%= post.videoUrl %>" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+            </div>
+        <% } %>
+
+        <div class="content__padding"><%- post.content %></div>
+
+        <!-- Post Meta Information -->
+        <div class="content__post-meta">
+            <% if (post.createdAt) { %>
+                <div class="content__upload-info">
+                    <i class="fa fa-calendar"></i> 
+                    <script>
+                        // Format posted date and time
+                        const createdAt = new Date("<%= post.createdAt %>");
+                        const options = {
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric',
+                            weekday: 'long',
+                            hour: 'numeric',
+                            minute: 'numeric',
+                            hour12: true
+                        };
+                        document.write("" + createdAt.toLocaleString('en-US', options));
+                    </script>
+                </div>
+
+                <!-- Time since posted -->
+                <div class="content__upload-info">
+                    <i class="fa fa-clock"></i>
+                    <script>
+                        function timeSince(date) {
+                            const seconds = Math.floor((new Date() - date) / 1000);
+                            let interval = Math.floor(seconds / 31536000);
+                            if (interval >= 1) return interval + " year" + (interval > 1 ? "s" : "") + " ago";
+                            interval = Math.floor(seconds / 2592000);
+                            if (interval >= 1) return interval + " month" + (interval > 1 ? "s" : "") + " ago";
+                            interval = Math.floor(seconds / 86400);
+                            if (interval >= 1) return interval + " day" + (interval > 1 ? "s" : "") + " ago";
+                            interval = Math.floor(seconds / 3600);
+                            if (interval >= 1) return interval + " hour" + (interval > 1 ? "s" : "") + " ago";
+                            interval = Math.floor(seconds / 60);
+                            if (interval >= 1) return interval + " minute" + (interval > 1 ? "s" : "") + " ago";
+                            return "Just now";
+                        }
+                        document.write("" + timeSince(createdAt));
+                    </script>
+                </div>
+            <% } else { %>
+                <p><small>Upload date not available</small></p>
+            <% } %>
+        </div>
+
+        <!-- Back to Home button after date -->
+        <div class="btn-grid">
+            <a href="/">Back to Home</a>
+        </div>
+    </div>
+
+    <%- include('footer') %>
+</body>
+</html>

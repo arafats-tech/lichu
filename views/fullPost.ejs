@@ -1,0 +1,12 @@
+<%- include('header') %>
+
+<div class="container">
+    <h1><%= post.title %></h1>
+    <% if (post.photoUrl) { %>
+        <img src="<%= post.photoUrl %>" alt="<%= post.title %>" class="img-fluid"> <!-- Display the full image -->
+    <% } %>
+    <div class="content">
+        <p><%= post.content %></p> <!-- Display the full content -->
+    </div>
+    <a href="/" class="btn btn-secondary">Back to Posts</a> <!-- Button to go back to index -->
+</div>

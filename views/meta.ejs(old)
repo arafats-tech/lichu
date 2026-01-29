@@ -1,0 +1,59 @@
+<%
+// Site information
+const site_title = "Arafat's Tech";
+const site_description = "Admission Progress Tracker For Varsity And Engineering Aspirants.";
+const site_keywords = "Admission Progress Tracker, Admission, Varsity, Engineering";
+const site_author = "Md. Arafat Rahman Nahid";
+const site_charset = "UTF-8";
+
+// Favicon
+const favicon = "logo.ico"; // Change this to the correct path
+
+// Open Graph metadata
+const og_image = "Admission.png"; // Change this to your image path
+const og_type = "website"; // Change this as per your content type
+
+// Dynamically generate the og_url
+const baseUrl = "https://iarafat.store"; // Update with your actual base URL
+const og_url = `${baseUrl}/${currentPage}`; // Create the dynamic URL based on the current page
+
+// Page-specific metadata
+const pageMeta = {
+    home: {
+        title: site_title,
+        description: site_description,
+        keywords: site_keywords,
+    },
+    post: {
+       // title: "Profile | Admission Progress Tracker",
+        description: site_description,
+        keywords: site_keywords,
+    },
+    // Add more pages as needed
+};
+
+%>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="<%= site_charset %>">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="<%= pageMeta[currentPage].description %>">
+    <meta name="keywords" content="<%= pageMeta[currentPage].keywords %>">
+    <meta name="author" content="<%= site_author %>">
+    <link rel="icon" type="image/x-icon" href="<%= favicon %>"> <!-- Favicon Link -->
+
+    <!-- Open Graph Tags -->
+    <meta property="og:title" content="<%= pageMeta[currentPage].title %>" />
+    <meta property="og:description" content="<%= pageMeta[currentPage].description %>" />
+    <meta property="og:image" content="<%= og_image %>" />
+    <meta property="og:url" content="<%= og_url %>" />
+    <meta property="og:type" content="<%= og_type %>" />
+
+    <title><%= pageMeta[currentPage].title %></title>
+</head>
+<body>
+    <!-- Content of your page will go here -->
+</body>
+</html>

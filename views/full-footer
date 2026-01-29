@@ -1,0 +1,68 @@
+<footer class="custom-footer">
+    <div class="container">
+        <!-- Mobile App Section 
+        <div class="row py-2">
+            <div class="col text-center">
+                <h5 class="custom-footer-title">Mobile App is Coming Soon!</h5>
+                <div class="app-icons">
+                    <a href="#" class="app-link" title="Get it on Google Play">
+                        <i class="fab fa-google-play fa-2x" aria-hidden="true"></i>
+                    </a>
+                    <a href="#" class="app-link" title="Download on the App Store">
+                        <i class="fab fa-apple fa-2x" aria-hidden="true"></i>
+                    </a>
+                </div>
+            </div>
+        </div>-->
+
+        <!-- Footer links section 
+        <div class="row py-2">
+            <div class="col text-center">
+                <ul class="custom-footer-links list-inline">
+                    <li class="list-inline-item"><a href="/about" class="custom-footer-link"><i class="fas fa-info-circle"></i> About Us</a></li>
+                    <li class="list-inline-item"><a href="/contact" class="custom-footer-link"><i class="fas fa-envelope"></i> Contact</a></li>
+                    <li class="list-inline-item"><a href="/privacy" class="custom-footer-link"><i class="fas fa-shield-alt"></i> Privacy Policy</a></li>
+                    <li class="list-inline-item"><a href="/terms" class="custom-footer-link"><i class="fas fa-file-contract"></i> Terms of Service</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Resources Section -->
+        <div class="row py-2">
+            <div class="col text-center">
+                <h5 class="custom-footer-title">Arafat's Tech</h5>
+                
+
+        <!-- Footer social icons section -->
+        <div class="row py-2">
+            <div class="col text-center">
+                <div class="social-icons">
+                    <a href="https://www.facebook.com/ArafatsTechWorld" class="social-icon" target="_blank" rel="noopener noreferrer"><i class="fab fa-facebook-f"></i></a>
+                    <a href="https://click.arnms.com/fb" class="social-icon" target="_blank" rel="noopener noreferrer"><i class="fab fa-twitter"></i></a>
+                    <a href="https://click.arnms.com/fb" class="social-icon" target="_blank" rel="noopener noreferrer"><i class="fab fa-instagram"></i></a>
+                    <a href="https://click.arnms.com/fb" class="social-icon" target="_blank" rel="noopener noreferrer"><i class="fab fa-linkedin-in"></i></a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Additional section for quick links or features -->
+        <div class="row py-2">
+            <div class="col text-center">
+                <h5 class="custom-footer-title">Quick Links</h5>
+                <ul class="custom-footer-quick-links list-inline">
+                    <li class="list-inline-item"><a href="#faq" class="custom-footer-quick-link"><i class="fas fa-question-circle"></i> FAQ</a></li>
+                    <li class="list-inline-item"><a href="#blog_coming_soon" class="custom-footer-quick-link"><i class="fas fa-blog"></i> Blog</a></li>
+                    <li class="list-inline-item"><a href="#working" class="custom-footer-quick-link"><i class="fas fa-headset"></i> Support</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Copyright Section -->
+        <div class="row py-2">
+            <div class="col text-center">
+                <pre class="custom-footer-text">&copy; 2024 Arafat's Tech. All rights reserved.</pre>
+            </div>
+        </div>
+    </div>
+</footer>
+

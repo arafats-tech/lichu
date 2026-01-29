@@ -1,0 +1,160 @@
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            height: 100%;
+            margin: 0;
+            overflow-y: auto;
+            display: flex;
+           /* background-color:  0 2px 8px rgba(0, 0, 0, 0.1) !important; */
+            flex-direction: column;
+        }
+        h1 {
+            font-family: 'Oswald', sans-serif;
+        }
+        h2 {
+            font-family: 'Merriweather', serif;
+        }
+        h3 {
+            font-family: 'Roboto Slab', serif;
+        }
+        .myapp-handwriting {
+            font-family: 'Dancing Script', cursive;
+        }
+        .myapp-monospace {
+            font-family: 'Roboto Mono', monospace;
+        }
+        .myapp-geometric {
+            font-family: 'Poppins', sans-serif;
+        }
+        .myapp-vintage {
+            font-family: 'Archivo Black', sans-serif;
+        }
+        p {
+            font-family: 'Roboto', sans-serif;
+        }
+       .myapp-blurred-header {
+        position: fixed;
+        width: 100%;
+        min-height: 36px; /* Minimal height */
+        backdrop-filter: blur(8px);
+        background: rgba(255, 255, 255, 0.7); /* Transparent white */
+        z-index: 1000;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); 
+        padding: 0 10px; /* Reduced padding for compactness */
+        display: flex;
+        align-items: center;
+    }
+    .navbar-brand {
+        font-size: 1.3rem; /* Adjust font size for minimal design */
+        margin: 0; /* Remove extra margin */
+        padding: 0; /* Remove padding */
+    }
+    .myapp-main-content {
+        flex: 1;
+        margin-top: 36px; /* Match the header's height */
+        padding: 20px;
+    }
+        #myapp-sidebar {
+            transition: all 0.2s ease;
+            width: 220px;
+            height: 100%;
+            position: fixed;
+            top: 0;
+            right: -220px;
+            backdrop-filter: blur(15px);
+            background: rgba(255, 255, 255, 0.2);
+            color: #000;
+            border-left: 1px solid rgba(255, 255, 255, 0.2);
+            z-index: 1000;
+            box-shadow: -2px 0 15px rgba(0, 0, 0, 0.5);
+            padding-top: 5px;
+        }
+        #myapp-sidebar.show {
+            right: 0;
+        }
+        #myapp-sidebar .nav-link {
+            color: #000;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            padding: 10px 10px;
+        }
+        #myapp-sidebar .nav-link:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: #000;
+        }
+        .myapp-navbar {
+            background-color: transparent;
+        }
+        .myapp-navbar-toggler {
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+        .myapp-navbar-toggler .icon {
+            font-size: 1rem;
+            color: green;
+            position: sticky;
+        }
+        .myapp-close-sidebar {
+            cursor: pointer;
+            font-size: 1.2rem;
+            color: #000;
+            margin-bottom: 15px;
+            padding: 10px;
+        }
+    
+/* Link the wonderful Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&family=Roboto:wght@300;400;500&display=swap');
+
+/* Blurred Sidebar Styling */
+.myapp-blurred-sidebar {
+    backdrop-filter: blur(30px); /* Maximum blur for a modern look */
+    background-color: rgba(255, 255, 255, 0.85); /* Light white background */
+    color: #333; /* Dark text for readability */
+    height: 100%;
+    border-right: 1px solid rgba(0, 0, 0, 0.1); /* Subtle border */
+    font-family: 'Poppins', sans-serif; /* Modern font */
+    transition: transform 0.3s ease; /* Smooth transition for effects */
+}
+
+/* Featured Image Styling */
+.featured-image img {
+    width: 100%; /* Full-width image */
+    height: auto;
+    border-radius: 8px; /* Rounded corners */
+    margin-bottom: 20px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+}
+
+/* Nav Links Styling */
+.myapp-blurred-sidebar .nav-link {
+    font-family: 'Roboto', sans-serif; /* Sleek and modern font */
+    color: #444; /* Dark text */
+    font-weight: 500; /* Bold for better visibility */
+    font-size: 16px; /* Standard font size */
+    padding: 12px 20px; /* Adequate padding for touch devices */
+    margin-bottom: 12px; /* Space between links */
+    border-radius: 8px; /* Rounded link edges */
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Active link color */
+.myapp-blurred-sidebar .nav-link.active {
+    background-color: #007bff;
+    color: white;
+    font-weight: 600; /* Slightly bolder */
+}
+
+/* Hover Effect for Links */
+.myapp-blurred-sidebar .nav-link:hover {
+    background-color: rgba(0, 0, 0, 0.05); /* Subtle hover effect */
+    color: #007bff; /* Highlight color on hover */
+    border-radius: 8px;
+}
+
+/* Smooth Transition for Sidebar */
+.offcanvas-start {
+    transform: translateX(-100%);
+}
+
+.offcanvas-start.show {
+    transform: translateX(0);
+}
+

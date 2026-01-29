@@ -1,0 +1,21 @@
+<h2>Posts</h2>
+<div class="row">
+    <% if (posts.length > 0) { %> <!-- Check if there are posts -->
+        <% posts.forEach(function(post) { %>
+            <div class="col-md-4 mb-4">
+                <div class="card">
+                    <img src="<%= post.image %>" class="card-img-top" alt="<%= post.title %>">
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            <a href="/post/<%= post.title %>"><%= post.title %></a> <!-- Use title as link -->
+                        </h5>
+                        <p class="card-text"><%= post.content.substring(0, 100) %>...</p>
+                        <a href="/post/<%= post.title %>" class="btn btn-primary">View Full Post</a> <!-- Use title as link -->
+                    </div>
+                </div>
+            </div>
+        <% }); %>
+    <% } else { %>
+        <p>No posts available.</p> <!-- Display message if no posts -->
+    <% } %>
+</div>

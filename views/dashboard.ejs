@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <style>
+        /* Reset margin and padding */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+
+        /* Body styling */
+        body {
+            background-color: #121212; /* Dark background */
+            color: #fff; /* Text color */
+            display: flex;
+            flex-direction: column; /* Align items vertically */
+            align-items: center; /* Center horizontally */
+            justify-content: center; /* Center vertically */
+            height: 100vh; /* Full viewport height */
+            text-align: center;
+        }
+
+        /* Dashboard container */
+        .dashboard-container {
+            width: 100%;
+            max-width: 500px; /* Maximum width for the dashboard */
+            background-color: #1c1c1c; /* Dashboard background color */
+            padding: 20px; /* Padding for dashboard */
+            border-radius: 12px; /* Rounded corners */
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3); /* Shadow effect */
+        }
+
+        /* Welcome message */
+        h1 {
+            font-size: 2rem; /* Size of the header */
+            margin-bottom: 1rem; /* Space below the header */
+            color: #e4e4e4; /* Header color */
+        }
+
+        /* Button styling */
+        button {
+            padding: 0.75rem 1.5rem; /* Padding for button */
+            font-size: 1rem; /* Button font size */
+            font-weight: bold; /* Button font weight */
+            border: none; /* No border */
+            border-radius: 8px; /* Rounded corners for button */
+            background-color: #3b5998; /* Button background color */
+            color: #fff; /* Button text color */
+            cursor: pointer; /* Pointer cursor */
+            transition: background-color 0.3s ease; /* Transition effect */
+            margin-top: 20px; /* Space above the button */
+        }
+
+        /* Button hover effect */
+        button:hover {
+            background-color: #32497d; /* Darker color on hover */
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <h1>Welcome, <%= username %>!</h1>
+        <p>You have successfully logged in. This is your dashboard.</p>
+        <button onclick="window.location.href='/logout'">Logout</button> <!-- Button to logout -->
+    </div>
+</body>
+</html>

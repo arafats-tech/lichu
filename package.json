@@ -1,11 +1,11 @@
 {
-  "name": "arnms-app",
+  "name": "lichu-app",
   "version": "1.0.0",
   "description": "A modern Node.js application for app.arnms.com",
   "main": "app.js",
   "scripts": {
-    "start": "node app.js",
-    "dev": "nodemon app.js"
+    "start": "node app.js",          // Vercel deploy এর জন্য
+    "dev": "nodemon app.js"          // Local development
   },
   "dependencies": {
     "express": "^4.17.3",
@@ -24,7 +24,7 @@
     "express-validator": "^6.14.0",
     "bcrypt": "^5.1.0",
     "serve-favicon": "^2.5.0",
-    "canvas": "^2.8.0"  
+    "canvas": "^2.8.0"
   },
   "devDependencies": {
     "nodemon": "^2.0.20",
@@ -32,7 +32,7 @@
     "prettier": "^2.8.8"
   },
   "engines": {
-    "node": ">=14.0.0"
+    "node": ">=14.0.0"        // Vercel automatically uses latest Node
   },
   "author": "ARAFAT RAHMAN",
   "license": "MIT"
